@@ -50,10 +50,16 @@ app.post(
     .isLength({ min: 4 })
     .withMessage("パスワードを4文字以上で入力してください"),
   check("email").custom(async (value) => {
-    await duplicateChecker(value, "email");
+    const user = await User.findOne({ email: value });
+    if (user) {
+      throw new Error("メールアドレスは既に登録されています");
+    }
   }),
   check("username").custom(async (value) => {
-    await duplicateChecker(value, "username");
+    const user = await User.findOne({ username: value });
+    if (user) {
+      throw new Error("ユーザー名は既に登録されています");
+    }
   }),
 
   async (req, res) => {
