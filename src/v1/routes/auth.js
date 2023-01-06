@@ -13,6 +13,8 @@ const {
   hashPassword,
   generateToken,
 } = require("../../../lib/function");
+const { authValidator } = require("../handlers/validation.js");
+const { register } = require("../controllers/user.js");
 
 router.get("/", (req, res) => {
   res.send("auth router!");
@@ -38,54 +40,8 @@ router.post(
   check("username").custom(async (value) => {
     await duplicateChecker(value, "username");
   }),
-
-  async (req, res) => {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-      const hashedPassword = hashPassword(req.body.password);
-      console.log(hashedPassword);
-      const user = new User({
-        username: req.body.username,
-        email: req.body.email,
-        password: hashedPassword,
-      });
-      const newUser = await User.create(user);
-      console.log({ newUser });
-      const token = generateToken(newUser);
-      console.log({ token });
-      return res.status(201).json({ token, user: newUser });
-
-      // console.log("1");
-      // await User.findOne({ username: user.username }, (err, user) => {
-      //   if (user) {
-      //     existsUser = true;
-      //   }
-      //   console.log(user);
-      // });
-      // console.log("4");
-      // await User.findOne({ email: user.email }, (err, user) => {
-      //   if (user) {
-      //     existsEmail = true;
-      //   }
-      //   console.log("3");
-      // });
-      // if (existsUser && existsEmail) {
-      //   res.status(400).send("ユーザー名とメールアドレスは既に登録されています");
-      // } else if (existsUser) {
-      //   res.status(400).send("ユーザー名は既に登録されています");
-      // } else if (existsEmail) {
-      //   res.status(400).send("メールアドレスは既に登録されています");
-      // }
-      // res.status(201).send({ user: user });
-      // await user.save();
-      // res.status(201).send(user);
-    } catch (error) {
-      res.status(400).send(`ユーザー登録に失敗しました(catch): ${error}`);
-    }
-  }
+  authValidator,
+  register
 );
 
 module.exports = router;

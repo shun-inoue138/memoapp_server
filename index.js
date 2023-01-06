@@ -35,7 +35,6 @@ app.get("/api/users", async (req, res) => {
     res.status(500).send(error);
   }
 });
-//ユーザー登録
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
