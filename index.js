@@ -1,5 +1,11 @@
 const express = require("express");
+const cors = require("cors");
 const app = express();
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+  })
+);
 const port = 3003;
 const mongoose = require("mongoose");
 const {
@@ -34,6 +40,10 @@ app.get("/api/users", async (req, res) => {
   } catch (error) {
     res.status(500).send(error);
   }
+});
+//テスト
+app.get("/api/test", async (req, res) => {
+  return res.status(200).send("test");
 });
 
 app.listen(port, () => {
